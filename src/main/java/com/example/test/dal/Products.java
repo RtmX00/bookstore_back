@@ -20,6 +20,7 @@ public class Products extends BaseEntity {
     @ManyToOne
     private Category category;
     private  Boolean condition;
+    private String description;
 
 
 

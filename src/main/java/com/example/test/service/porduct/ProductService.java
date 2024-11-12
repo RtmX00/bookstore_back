@@ -20,10 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -214,5 +211,43 @@ public ResultDto<ResultPagedDto<List<ResponseProductDto>>> getProductByCategoryI
         }
 
 }
+public ResultDto<ResultPagedDto<List<ResponseProductDto>>> getProductByNameAuthor(
+        int pageSize,
+        int page,
+        String host,
+        String nameAuthor
+){
+
+       try {
+           Pageable pageable = PageRequest.of(page-1, pageSize);
+           List<ResponseProductDto> productDtos =
+                   productsRepository.
+                           findProductsByNameAfter(nameAuthor , pageable).
+                           stream().map(productMapper::toDto).
+                           toList();
+           productDtos.forEach( item ->
+                   item.setImage(host + "/" + fileUtil
+                           .getImage(
+                                   item
+                                           .getId()
+                                           .toString()
+                                   , ImageFolderProperties.productFolder
+                           )
+                   )
+           );
+           if (page >= 1 && pageSize>=1) {
+               var totalPage = (long) Math.ceil((double) productsRepository.count() / pageSize);
+               return ResultUtil.success(new ResultPagedDto(page,pageSize,totalPage,productDtos));
+           }else {
+               throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
+           }
+
+       } catch (CustomException.NewException e) {
+           throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
+       } catch (Exception e) {
+           throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+}
+
 
 }

@@ -37,10 +37,7 @@ public class ProductClient {
                         pageSize,
                         page,
                         filterLists,
-                        ServerHostRequest
-                                .getHost(
-                                        request
-                                )
+                        ServerHostRequest.getHost(request)
                 )
         );
     }
@@ -65,6 +62,20 @@ public class ProductClient {
             @RequestParam(required = false , defaultValue = "1") int page
     ){
         return ResponseEntity.ok(productService.getProductByCategoryId(categoryId ,pageSize,page));
+    }
+    @GetMapping("/ByNameAuthor")
+    public ResponseEntity<ResultDto<ResultPagedDto<List<ResponseProductDto>>>> getProductsByNameAuthor(
+            @RequestParam(required = false ,defaultValue = "20") int pageSize,
+            @RequestParam(required = false , defaultValue = "1") int page,
+            @RequestParam String name,
+            HttpServletRequest request
+    ){
+return ResponseEntity.ok(productService.getProductByNameAuthor(pageSize,
+        page,
+        ServerHostRequest.getHost(request),
+        name
+)
+);
     }
 
 }

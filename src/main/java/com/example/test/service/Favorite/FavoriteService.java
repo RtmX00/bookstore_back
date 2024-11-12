@@ -161,7 +161,7 @@ public ResultDto<ResponseCuntFavoriteDto> getFavoriteByproductId(UUID productId 
         return ResultUtil.success(new ResponseCuntFavoriteAllAdminDto(result, totalCount));
     }
 
-    public Object getTopProductFavorite() {
+    public ResultDto<Object> getTopProductFavorite() {
         try {
             var favoriteCunt = favoriteRepository.countAllTopFavorite();
             var result = new ArrayList<ResponseTopFavoriteAdminDto>();
