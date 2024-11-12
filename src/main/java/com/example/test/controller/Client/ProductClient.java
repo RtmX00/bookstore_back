@@ -37,10 +37,7 @@ public class ProductClient {
                         pageSize,
                         page,
                         filterLists,
-                        ServerHostRequest
-                                .getHost(
-                                        request
-                                )
+                        ServerHostRequest.getHost(request)
                 )
         );
     }
