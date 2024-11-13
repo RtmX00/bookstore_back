@@ -11,6 +11,7 @@ public class ResponseProductDto {
     private UUID id;
     private String name;
     private long price;
+
     private String description;
     private String nameAuthor;
     private String publicationDate;
