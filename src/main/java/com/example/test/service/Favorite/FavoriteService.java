@@ -1,5 +1,4 @@
 package com.example.test.service.Favorite;
-
 import com.example.test.dal.Favorite;
 import com.example.test.dal.Products;
 import com.example.test.dal.Users;
@@ -19,7 +18,6 @@ import com.raika.customexception.exceptions.CustomException;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
