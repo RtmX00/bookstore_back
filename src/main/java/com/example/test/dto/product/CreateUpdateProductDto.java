@@ -12,6 +12,7 @@ public class CreateUpdateProductDto {
     @Length(min = 2, message = "please enter user name not valid")
     private String name;
     private long price;
+    private String description;
     @NotNull
     @Length(min = 2, message = "please enter NameOfTheAuthor  not valid")
     private String nameAuthor;
@@ -20,5 +21,7 @@ public class CreateUpdateProductDto {
     private String publicationDate;
     @NotNull
     private UUID categoryId;
+
     private String image;
+
 }
