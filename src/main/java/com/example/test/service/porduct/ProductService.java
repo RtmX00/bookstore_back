@@ -13,6 +13,7 @@ import com.example.test.utils.ImageFolderProperties;
 import com.example.test.utils.ResultPagedDto;
 import com.example.test.utils.ResultUtil;
 import com.raika.customexception.exceptions.CustomException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 @Service
@@ -211,18 +214,15 @@ public ResultDto<ResultPagedDto<List<ResponseProductDto>>> getProductByCategoryI
         }
 
 }
-public ResultDto<ResultPagedDto<List<ResponseProductDto>>> getProductByNameAuthor(
-        int pageSize,
-        int page,
+public ResultDto<List<ResponseProductDto>> getProductByNameAuthor(
         String host,
         String nameAuthor
 ){
 
        try {
-           Pageable pageable = PageRequest.of(page-1, pageSize);
            List<ResponseProductDto> productDtos =
                    productsRepository.
-                           findProductsByNameAfter(nameAuthor , pageable).
+                           findProductsByNameAuthor(nameAuthor).
                            stream().map(productMapper::toDto).
                            toList();
            productDtos.forEach( item ->
@@ -235,19 +235,14 @@ public ResultDto<ResultPagedDto<List<ResponseProductDto>>> getProductByNameAutho
                            )
                    )
            );
-           if (page >= 1 && pageSize>=1) {
-               var totalPage = (long) Math.ceil((double) productsRepository.count() / pageSize);
-               return ResultUtil.success(new ResultPagedDto(page,pageSize,totalPage,productDtos));
-           }else {
-               throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
-           }
-
+           return ResultUtil.success(productDtos);
        } catch (CustomException.NewException e) {
            throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
        } catch (Exception e) {
            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
        }
 }
+
 
 
 }

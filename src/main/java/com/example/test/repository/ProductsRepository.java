@@ -17,7 +17,7 @@ public interface ProductsRepository extends JpaRepository<Products, UUID>, CrudR
     List<Products> findByCategoryId(UUID categoryId);
     @Query("SELECT u FROM Products u WHERE :name IS NULL OR u.name LIKE %:name%")
     List<Products> findByNameContainingOrAll(@Param("name") String name, Pageable pageable);
-    List<Products> findProductsByNameAfter(String NameAfter , Pageable pageable);
+    List<Products> findProductsByNameAuthor(String NameAfter);
 
 
 }

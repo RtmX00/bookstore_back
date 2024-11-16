@@ -64,18 +64,12 @@ public class ProductClient {
         return ResponseEntity.ok(productService.getProductByCategoryId(categoryId ,pageSize,page));
     }
     @GetMapping("/ByNameAuthor")
-    public ResponseEntity<ResultDto<ResultPagedDto<List<ResponseProductDto>>>> getProductsByNameAuthor(
-            @RequestParam(required = false ,defaultValue = "20") int pageSize,
-            @RequestParam(required = false , defaultValue = "1") int page,
+    public ResponseEntity<ResultDto<List<ResponseProductDto>>> getProductsByNameAuthor(
             @RequestParam String name,
             HttpServletRequest request
     ){
-return ResponseEntity.ok(productService.getProductByNameAuthor(pageSize,
-        page,
-        ServerHostRequest.getHost(request),
-        name
-)
-);
+return ResponseEntity.ok(productService.getProductByNameAuthor(ServerHostRequest.getHost(request),name));
     }
+
 
 }
