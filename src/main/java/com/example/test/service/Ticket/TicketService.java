@@ -5,6 +5,7 @@ import com.example.test.dal.Products;
 import com.example.test.dal.Users;
 import com.example.test.dto.Favorite.*;
 import com.example.test.dto.ResultDto.ResultDto;
+import com.example.test.dto.Ticket.ResponseTicketDto;
 import com.example.test.mapper.FavoriteMapper;
 import com.example.test.mapper.OrderMapper;
 import com.example.test.mapper.ProductMapper;
@@ -30,17 +31,65 @@ import java.util.stream.Collectors;
 @Service
 public class TicketService {
    private final TicketRepository ticketRepository;
+   private final UserRepository userRepository;
     private final TicketMapper ticketMapper = Mappers.getMapper(TicketMapper.class);
 
-    public TicketService(TicketRepository ticketRepository) {
+    public TicketService(TicketRepository ticketRepository, UserRepository userRepository) {
         this.ticketRepository = ticketRepository;
+        this.userRepository = userRepository;
     }
 
 
-    public ResultDto<ResponseCuntFavoriteAdminDto> getList(UUID productId) {
-        return ResultUtil.success(null);
+    public ResultDto<ResultPagedDto<List<ResponseTicketDto>>> getList(
+            UUID userId ,
+            int pageSize,
+            int page
+            ) {
+        try {
+            Users user = userRepository.findById(userId).orElseThrow(
+                    () -> new CustomException.DataNotFound("user not found")
+            );
+            Pageable pageable = PageRequest.of(page-1, pageSize);
+            List<ResponseTicketDto> tickets = ticketRepository.findByUsers(user ,pageable)
+                    .stream().map(ticketMapper::toDto).toList();
+            if(page >= 1 && pageSize>=1){
+                var totalPage = (long) Math.ceil((double) ticketRepository.count() / pageSize);
+                return ResultUtil.success(new ResultPagedDto(page, pageSize, totalPage, tickets));
+            }
+            else {
+                throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
+            }
+        } catch (CustomException.NewException e) {
+            throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
+        } catch (Exception e) {
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-public ResultDto<ResponseCuntFavoriteDto> getFavoriteByproductId(UUID productId , UUID userId){
+    public ResultDto<ResultPagedDto<List<ResponseTicketDto>>> getListAdmin(
+            int pageSize,
+            int page
+    ){
+        try {
+            Pageable pageable = PageRequest.of(page-1, pageSize);
+            List<ResponseTicketDto> tickets = ticketRepository
+                    .findDistinctUsers(pageable)
+                    .stream()
+                    .map(ticketMapper::toDto)
+                    .toList();
+            if(page >= 1 && pageSize>=1){
+                var totalPage = (long) Math.ceil((double) ticketRepository.count() / pageSize);
+                return ResultUtil.success(new ResultPagedDto(page, pageSize, totalPage, tickets));
+            }
+            else {
+                throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
+            }
+        }catch (CustomException.NewException e) {
+            throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
+        } catch (Exception e) {
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+public ResultDto<ResponseCuntFavoriteDto> creatClint(UUID productId , UUID userId){
         try{
             return ResultUtil.success(null);
         } catch (CustomException.NewException e) {
@@ -84,23 +133,7 @@ public ResultDto<ResponseCuntFavoriteDto> getFavoriteByproductId(UUID productId 
 
     public ResultDto<ResponseFavoriteDto> create(UUID userId, UUID productId) {
         try {
-            Users user = userRepository.findById(userId).orElseThrow(
-                    () -> new CustomException.BadRequest("User not found")
-            );
-
-            var products = productsRepository.findById(productId).orElseThrow(() ->
-                    new CustomException.BadRequest("Product not found")
-            );
-            var favoriteFind = favoriteRepository.findByUserAndProducts(user, products);
-            if (favoriteFind != null) {
-                throw new CustomException.BadRequest("اقا شما این را لایک کردید ");
-            } else {
-                var favorite = new Favorite();
-                favorite.setUser(user);
-                favorite.setProducts(products);
-                favoriteRepository.save(favorite);
-                return ResultUtil.success(favoriteMapper.toDto(favorite));
-            }
+            return ResultUtil.success(null);
         } catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
         } catch (Exception e) {
@@ -110,20 +143,7 @@ public ResultDto<ResponseCuntFavoriteDto> getFavoriteByproductId(UUID productId 
 
     public ResultDto<Boolean> delete(UUID userId, UUID productId) {
         try {
-            Users user = userRepository.findById(userId).orElseThrow(
-                    () -> new CustomException.BadRequest("User not found")
-            );
-
-            Products products = productsRepository.findById(productId).orElseThrow(
-                    () -> new CustomException.BadRequest("Product not found")
-            );
-            Favorite favorite = favoriteRepository.findByUserAndProducts(user, products);
-            if (favorite != null) {
-                favoriteRepository.delete(favorite);
-                return ResultUtil.success(true);
-            } else {
-                throw new CustomException.BadRequest("Favorite not found");
-            }
+            return ResultUtil.success(null);
         } catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
 

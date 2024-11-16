@@ -3,6 +3,7 @@ package com.example.test.dal;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 @Entity
 @Table(name = "Ticket")
@@ -12,8 +13,12 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
-    private Users users;
+    private UUID From;
 
-    private String contents;
+    private UUID To;
+
+    private String content;
+
+    private Timestamp createAt;
+    private Timestamp  updatedAt;
 }
