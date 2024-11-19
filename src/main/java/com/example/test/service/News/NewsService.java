@@ -92,14 +92,28 @@ public class NewsService {
     }
     public ResultDto<ResponseNewsDto> update(UUID id , CreateUpdateNewsDto model){
         try {
-            Optional<News> news = newsRepository.findById(id);
-            if (news.isPresent()) {
+            News news = newsRepository.findById(id).orElseThrow(
+                    () -> new CustomException.BadRequest("News not found")
+            );
+            if (news != null) {
                 var toEntity = newsMapper.toEntity(model);
                 var NewsSave = newsRepository.save(toEntity);
                 return ResultUtil.success(newsMapper.toDto(NewsSave));
             }else {
                 throw new CustomException.BadRequest("News not found");
             }
+        } catch (CustomException.NewException e) {
+            throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
+        } catch (Exception e) {
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public ResultDto<ResponseNewsDto> getById(UUID id){
+        try {
+            var product = newsRepository.findById(id).orElseThrow(
+                    () -> new CustomException.BadRequest("News not found")
+            );
+            return ResultUtil.success(newsMapper.toDto(product));
         } catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
         } catch (Exception e) {

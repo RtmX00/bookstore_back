@@ -63,4 +63,12 @@ public class NewsAdmin {
         userUtil.isAdmin(userId);
         return ResponseEntity.ok(newsService.list(pageSize,page));
     }
+    @GetMapping("/getById")
+    public ResponseEntity<ResultDto<ResponseNewsDto>> getById(
+            @RequestHeader UUID userId,
+            @RequestParam UUID NewsId
+    ){
+        userUtil.checkAdmin(userId);
+        return ResponseEntity.ok(newsService.getById(NewsId));
+    }
 }

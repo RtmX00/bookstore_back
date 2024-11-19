@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Data
 public class ResponseNewsDto {
+    private UUID id;
     private String title;
     private String content;
     private Timestamp createAt;

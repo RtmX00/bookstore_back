@@ -15,12 +15,10 @@ import java.util.List;
 @RequestMapping("client/News")
 public class NewsClient {
     private final NewsService newsService;
-    private final UserUtil userUtil;
 
 
-    public NewsClient(NewsService newsService, UserUtil userUtil) {
+    public NewsClient(NewsService newsService) {
         this.newsService = newsService;
-        this.userUtil = userUtil;
     }
 
     @GetMapping("/list")

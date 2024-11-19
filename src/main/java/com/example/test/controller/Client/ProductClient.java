@@ -71,5 +71,11 @@ public class ProductClient {
 return ResponseEntity.ok(productService.getProductByNameAuthor(ServerHostRequest.getHost(request),name));
     }
 
-
+@GetMapping("/ByPercentage")
+    public ResponseEntity<ResultDto<ResultPagedDto<List<ResponseProductDto>>>> getProductsByPercentage(
+            @RequestParam int page ,
+            @RequestParam int pageSize
+){
+        return ResponseEntity.ok(productService.sortByPercentage(pageSize,page));
+}
 }

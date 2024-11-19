@@ -39,7 +39,7 @@ public class OrderClient {
 
     @GetMapping("/list")
     public ResponseEntity<ResultDto<List<ResponseOrderDto>>> getOrders(
-            @RequestHeader @Valid UUID userId
+            @RequestParam @Valid UUID userId
     ) {
         userUtil.isUser(userId);
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));

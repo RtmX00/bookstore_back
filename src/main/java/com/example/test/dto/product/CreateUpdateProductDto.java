@@ -1,5 +1,6 @@
 package com.example.test.dto.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -12,6 +13,7 @@ public class CreateUpdateProductDto {
     @Length(min = 2, message = "please enter user name not valid")
     private String name;
     private long price;
+    private int percentage;
     private String description;
     @NotNull
     @Length(min = 2, message = "please enter NameOfTheAuthor  not valid")
@@ -23,5 +25,6 @@ public class CreateUpdateProductDto {
     private UUID categoryId;
 
     private String image;
+
 
 }

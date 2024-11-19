@@ -21,7 +21,7 @@ spring:
     name: test
 
 server:
-  port: 8080
+  port: 8000
   forward-headers-strategy: framework
 
 logging:

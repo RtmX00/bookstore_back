@@ -11,9 +11,11 @@ public class ResponseProductDto {
     private UUID id;
     private String name;
     private long price;
+    private int percentage;
     private String description;
     private String nameAuthor;
     private String publicationDate;
+    private long totalPrice;
     private Boolean condition;
     private ResponseCategoryDto category;
     private String image;

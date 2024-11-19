@@ -13,7 +13,6 @@ import com.example.test.utils.ImageFolderProperties;
 import com.example.test.utils.ResultPagedDto;
 import com.example.test.utils.ResultUtil;
 import com.raika.customexception.exceptions.CustomException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.URL;
+
 import java.util.*;
 
 @Service
@@ -50,7 +48,7 @@ public class ProductService {
             String host
             ) {
         try {
-            Sort sort = Sort.unsorted() ;
+            Sort sort = Sort.by(Sort.Direction.ASC, "createAt");
             if (filterLists == FilterLists.Cheap){
                 sort = Sort.by(Sort.Order.asc("price"));
             }else if(filterLists == FilterLists.Expensive){
@@ -103,6 +101,12 @@ public class ProductService {
             } else {
                 Products product = productMapper.toEntity(model);
                 product.setCategory(category);
+                if (model.getPercentage() > 0 && model.getPercentage() < 100){
+                    long result = (long) Math.ceil(model.getPrice()-(model.getPrice()*(model.getPercentage() * 0.01)));
+                    product.setTotalPrice(result);
+                }else {
+                    product.setTotalPrice(model.getPrice());
+                }
                 var result = productsRepository.save(product);
                 if (model.getImage() !=null && !model.getImage().equals("String")) {
                     fileUtil.saveImage(model.getImage(),product.getId().toString(), ImageFolderProperties.productFolder);
@@ -154,7 +158,14 @@ public class ProductService {
             if (products.isPresent()) {
                 Products productsEntity = products.get();
                 productsEntity.setName(model.getName());
+                if (model.getPercentage() > 0 && model.getPercentage() < 100){
+                    long result = (long) Math.ceil(model.getPrice()-(model.getPrice()*(model.getPercentage() * 0.01)));
+                    productsEntity.setTotalPrice(result);
+                }else {
+                    productsEntity.setTotalPrice(model.getPrice());
+                }
                 productsEntity.setPrice(model.getPrice());
+
                 return ResultUtil.success(productMapper.toDto(productsRepository.save(productsEntity)));
             } else {
                 throw new CustomException.BadRequest("Product not found");
@@ -243,6 +254,30 @@ public ResultDto<List<ResponseProductDto>> getProductByNameAuthor(
        }
 }
 
+public ResultDto<ResultPagedDto<List<ResponseProductDto>>> sortByPercentage(
+        int pageSize,
+        int page
+){
+try {
+    Sort sort = Sort.by(Sort.Direction.ASC, "percentage");
+    Pageable pageable = PageRequest.of(page-1, pageSize , sort);
+    List<ResponseProductDto> productDtos = productsRepository
+            .findAll(pageable)
+            .stream()
+            .map(productMapper::toDto)
+            .toList();
+    if (page >= 1 && pageSize>=1) {
+        var totalPage = (long) Math.ceil((double) productsRepository.count() / pageSize);
+        return ResultUtil.success(new ResultPagedDto(page,pageSize,totalPage,productDtos));
+    }else {
+        throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
+    }
+} catch (CustomException.NewException e) {
+    throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
+} catch (Exception e) {
+    throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+}
+}
 
 
 }

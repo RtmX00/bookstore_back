@@ -10,10 +10,13 @@ import com.example.test.mapper.TransacionMapper;
 import com.example.test.repository.OrderRepository;
 import com.example.test.repository.TransactionRepository;
 import com.example.test.repository.UserRepository;
+import com.example.test.utils.ResultPagedDto;
 import com.example.test.utils.ResultUtil;
 import com.raika.customexception.exceptions.CustomException;
 import jakarta.transaction.Transactional;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -41,23 +44,23 @@ private final UserRepository userRepository;
     }
 
     @Transactional
-    public Boolean create(UUID orderId , UUID userId){
+    public ResultDto<Boolean> create(UUID orderId , UUID userId){
         try {
             userRepository.findById(userId).orElseThrow(
                     () -> new  CustomException.BadRequest("user does not exist"));
             Orders order = orderRepository.findById(orderId).orElseThrow(
                     () -> new  CustomException.BadRequest("this order does not exist"));
             UUID getOrderUserId = order.getUsers().getId();
-            if(getOrderUserId == userId && order.getStatus().equals(OrderStatus.Pending)){
+            if(getOrderUserId == userId || order.getStatus()==OrderStatus.Pending){
                 order.setStatus(OrderStatus.Success);
                 Transaction transaction =new Transaction();
                 transaction.setStatus(TransactionStatus.Payed);
                 transaction.setOrders(order);
                 transaction.setTrackingNumber((int)(Math.random() * 100000000 + 1));
                 transactionRepository.save(transaction);
-                return true;
+                return ResultUtil.success(true);
             }else {
-                throw new CustomException.BadRequest("Order not found");
+                throw new CustomException.BadRequest("you bay already payed");
             }
         }catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(),e.getStatusCode());
@@ -81,10 +84,19 @@ private final UserRepository userRepository;
 //        }
 //    }
 
-    public ResultDto<List<ResponseTransactionDto>> getList(){
+    public ResultDto<ResultPagedDto<List<ResponseTransactionDto>>> getList(
+            int pageSize,
+            int page
+    ){
         try {
-            var result =  transactionRepository.findAll().stream().map(transacionMapper::toDto).toList();
-            return ResultUtil.success(result);
+            Pageable pageable = PageRequest.of(page-1, pageSize);
+            List<ResponseTransactionDto> result =  transactionRepository.findAll().stream().map(transacionMapper::toDto).toList();
+            if (page >= 1 && pageSize>=1) {
+                var totalPage = (long) Math.ceil((double) transactionRepository.count() / pageSize);
+                return ResultUtil.success(new ResultPagedDto(page,pageSize,totalPage,result));
+            }else {
+                throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
+            }
         }catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(),e.getStatusCode());
 

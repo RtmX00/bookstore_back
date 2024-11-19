@@ -24,4 +24,5 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
     private String address;
+
 }

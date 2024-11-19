@@ -5,6 +5,7 @@ import com.example.test.dto.order.ResponseOrderDto;
 import com.example.test.service.Orders.OrderService;
 import com.example.test.utils.ResultPagedDto;
 import com.example.test.utils.UserUtil;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,15 @@ public class OrderAdmin {
     ) {
         userUtil.isAdmin(userid);
         return ResponseEntity.ok(orderService.getLatestOrder(orderName, pageSize, page));
+    }
+    @GetMapping("/getOrdersByUserId")
+    public ResponseEntity<ResultDto<List<ResponseOrderDto>>> getOrdersByUserId(
+            @RequestHeader UUID validationId,
+            @RequestParam @Valid UUID userId
+
+    ) {
+        userUtil.isAdmin(validationId);
+        return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
 }

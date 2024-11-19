@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -33,14 +32,6 @@ public class ProductAdmin {
         this.userUtil = userUtil;
     }
 
-    @PostMapping("/creat")
-    public ResponseEntity<ResultDto<ResponseProductDto>> addProduct(
-            @RequestBody CreateUpdateProductDto model,
-            @RequestHeader UUID userId
-    ) {
-        userUtil.checkAdmin(userId);
-        return ResponseEntity.ok(productService.create(model));
-    }
 
     @DeleteMapping
     public void deleteById(
@@ -75,7 +66,7 @@ public class ProductAdmin {
             @RequestHeader UUID userId,
             @PathVariable UUID categoryId
     ) {
-        userUtil.checkAdmin(userId);
+        userUtil.isAdmin(userId);
         return ResponseEntity.ok(productService.getProductsByCategoryId(categoryId));
     }
 
@@ -98,6 +89,14 @@ public class ProductAdmin {
                 ServerHostRequest.getHost(request)
         )
         );
+    }
+    @PostMapping("/create")
+    public ResponseEntity<ResultDto<ResponseProductDto>> create(
+            @RequestHeader UUID userId,
+            @RequestBody CreateUpdateProductDto model
+    ){
+        userUtil.isAdmin(userId);
+        return ResponseEntity.ok(productService.create(model));
     }
 
 
