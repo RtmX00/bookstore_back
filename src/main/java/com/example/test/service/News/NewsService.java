@@ -14,6 +14,7 @@ import com.raika.customexception.exceptions.CustomException;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +38,8 @@ public class NewsService {
     {
         try {
 
-
-
-            Pageable pageable = PageRequest.of(page-1, pageSize);
+            Sort sort = Sort.by(Sort.Direction.ASC, "createAt");
+            Pageable pageable = PageRequest.of(page-1, pageSize , sort);
             List<ResponseNewsDto> newsList = newsRepository
                     .findAll(pageable)
                     .stream()

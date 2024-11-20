@@ -39,13 +39,23 @@ public class OrderAdmin {
         return ResponseEntity.ok(orderService.getLatestOrder(orderName, pageSize, page));
     }
     @GetMapping("/getOrdersByUserId")
-    public ResponseEntity<ResultDto<List<ResponseOrderDto>>> getOrdersByUserId(
-            @RequestHeader UUID validationId,
-            @RequestParam @Valid UUID userId
+    public ResponseEntity<ResultDto<ResultPagedDto<List<ResponseOrderDto>>>> getOrdersByUserId(
+            @RequestHeader UUID userId,
+            @RequestParam @Valid UUID validationId,
+            @RequestParam(required = false, defaultValue = "20") int pageSize,
+            @RequestParam(required = false, defaultValue = "1") int page
+
 
     ) {
-        userUtil.isAdmin(validationId);
-        return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
+        userUtil.isAdmin(userId);
+        return ResponseEntity.ok(orderService.getOrdersByUserId(validationId , pageSize ,page));
     }
-
+    @GetMapping("/getOrderById")
+    public ResponseEntity<ResultDto<ResponseOrderDto>> getOrderById(
+            @RequestHeader UUID userId,
+            @RequestParam UUID orderId
+    ){
+        userUtil.isAdmin(userId);
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
 }

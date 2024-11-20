@@ -13,6 +13,7 @@ public class ResponseOrderDto {
     private UUID id;
     private ResponseUserDto user;
     private String name;
+    private Users users;
     private  long number;
     private double price;
     private OrderStatus status;

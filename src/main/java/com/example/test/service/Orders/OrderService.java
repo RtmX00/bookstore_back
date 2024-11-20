@@ -23,11 +23,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.swing.plaf.PanelUI;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class OrderService  {
+public class OrderService {
     private final ProductsRepository productsRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -52,17 +53,16 @@ public class OrderService  {
             int page
     ) {
         try {
-            Pageable pageable = PageRequest.of(page-1, pageSize); // Assuming `page` is 1-based
+            Pageable pageable = PageRequest.of(page - 1, pageSize); // Assuming `page` is 1-based
             List<ResponseOrderDto> category = orderRepository
                     .findByNameContainingOrAll(orderName, pageable)
                     .stream()
                     .map(orderMapper::toDto)
                     .toList();
-            if(page >= 1 && pageSize>=1){
+            if (page >= 1 && pageSize >= 1) {
                 var totalPage = (long) Math.ceil((double) productsRepository.count() / pageSize);
                 return ResultUtil.success(new ResultPagedDto(page, pageSize, totalPage, category));
-            }
-            else {
+            } else {
                 throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
             }
         } catch (CustomException.NewException e) {
@@ -71,17 +71,38 @@ public class OrderService  {
             throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    public ResultDto<List<ResponseOrderDto>> getOrdersByUserId(UUID userId) {
+    public ResultDto<ResponseOrderDto> getOrderById(UUID orderId) {
         try {
-            var user = userRepository.findById(userId).orElseThrow(
-                    () -> new CustomException.BadRequest("user not found"));
-            var order = orderRepository.findByUsers(user).stream().map(orderMapper::toDto).toList();
-            return ResultUtil.success(order);
+            var order = orderRepository.findById(orderId).orElseThrow(
+                    () -> new CustomException.BadRequest("Order not found")
+            );
+            return ResultUtil.success(orderMapper.toDto(order));
         } catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
         } catch (Exception e) {
-            throw new CustomException.NewException(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResultDto<ResultPagedDto<List<ResponseOrderDto>>> getOrdersByUserId(
+            UUID userId,
+            int pageSize,
+            int page) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, pageSize);
+            var user = userRepository.findById(userId).orElseThrow(
+                    () -> new CustomException.BadRequest("user not found"));
+            var order = orderRepository.findByUsers(user,pageable).stream().map(orderMapper::toDto).toList();
+            if (page >= 1 && pageSize >= 1) {
+                var totalPage = (long) Math.ceil((double) productsRepository.count() / pageSize);
+                return ResultUtil.success(new ResultPagedDto(page, pageSize, totalPage, order));
+            } else {
+                throw new CustomException.BadRequest("please enter pageSize and page or Above zero");
+            }
+        } catch (CustomException.NewException e) {
+            throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
+        } catch (Exception e) {
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,7 +127,7 @@ public class OrderService  {
             Products products = productsRepository.findById(productId).orElseThrow(
                     () -> new CustomException.BadRequest("Product not found"));
             var currentOrder = orderRepository.findFirstByUsersAndStatus(user, OrderStatus.Pending);
-            if(currentOrder != null) {
+            if (currentOrder != null) {
                 currentOrder.setStatus(OrderStatus.Cancel);
                 orderRepository.save(currentOrder);
             }
@@ -123,7 +144,7 @@ public class OrderService  {
         } catch (CustomException.NewException e) {
             throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
         } catch (Exception e) {
-            throw new CustomException.NewException(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -150,7 +171,7 @@ public class OrderService  {
             throw new CustomException.NewException(e.getMessage(), e.getStatusCode());
 
         } catch (Exception e) {
-            throw new CustomException.NewException(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException.NewException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

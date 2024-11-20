@@ -3,6 +3,7 @@ package com.example.test.controller.Client;
 import com.example.test.dto.ResultDto.ResultDto;
 import com.example.test.dto.order.ResponseOrderDto;
 import com.example.test.service.Orders.OrderService;
+import com.example.test.utils.ResultPagedDto;
 import com.example.test.utils.UserUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +39,13 @@ public class OrderClient {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ResultDto<List<ResponseOrderDto>>> getOrders(
-            @RequestParam @Valid UUID userId
+    public ResponseEntity<ResultDto<ResultPagedDto<List<ResponseOrderDto>>>> getOrders(
+            @RequestParam @Valid UUID userId,
+            @RequestParam(required = false, defaultValue = "20") int pageSize,
+            @RequestParam(required = false, defaultValue = "1") int page
     ) {
         userUtil.isUser(userId);
-        return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
+        return ResponseEntity.ok(orderService.getOrdersByUserId(userId , pageSize , page));
     }
 
     @GetMapping("/getCurrent")

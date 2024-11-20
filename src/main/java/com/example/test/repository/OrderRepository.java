@@ -18,7 +18,7 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Orders, UUID>, CrudRepository<Orders, UUID> {
     Orders findFirstByUsersAndStatus(Users users, OrderStatus status);
-    List<Orders> findByUsers(Users users);
+    List<Orders> findByUsers(Users users , Pageable pageable);
     @Query("SELECT u FROM Orders u WHERE :name IS NULL OR u.name LIKE %:name%")
     List<Orders> findByNameContainingOrAll(@Param("name") String name, Pageable pageable);
 }

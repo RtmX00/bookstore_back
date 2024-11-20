@@ -29,11 +29,11 @@ public class UserAdmin {
 
     @GetMapping("/getById")
     public ResponseEntity<ResultDto<ResponseUserDto>> getUserById(
-            @RequestHeader UUID ValidatingId,
-            @RequestParam UUID UserId
+            @RequestHeader UUID userId,
+            @RequestParam UUID ValidatingId
     ) {
-        userUtil.isAdmin(ValidatingId);
-        return ResponseEntity.ok(userService.findById(UserId));
+        userUtil.isAdmin(userId);
+        return ResponseEntity.ok(userService.findById(ValidatingId));
     }
 
     @GetMapping("/list")
