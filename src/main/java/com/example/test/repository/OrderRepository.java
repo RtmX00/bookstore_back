@@ -1,8 +1,6 @@
 package com.example.test.repository;
 
-import com.example.test.dal.Category;
 import com.example.test.dal.Orders;
-import com.example.test.dal.Products;
 import com.example.test.dal.Users;
 import com.example.test.enums.OrderStatus;
 import org.springframework.data.domain.Pageable;

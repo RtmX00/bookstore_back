@@ -3,7 +3,6 @@ package com.example.test.repository;
 import com.example.test.dal.Favorite;
 import com.example.test.dal.Products;
 import com.example.test.dal.Users;
-import com.example.test.dto.Favorite.ResponseFavoriteDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

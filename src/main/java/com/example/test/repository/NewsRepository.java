@@ -1,6 +1,6 @@
 package com.example.test.repository;
 
-import com.example.test.dal.Favorite;
+
 import com.example.test.dal.News;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;

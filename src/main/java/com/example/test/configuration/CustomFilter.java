@@ -2,7 +2,6 @@ package com.example.test.configuration;
 
 import com.raika.customexception.exceptions.CustomException;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,12 @@ public class CustomFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
               {
         try {
-            System.out.println("Request intercepted by CustomFilter"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   );
+
+            System.out.println("Request intercepted by CustomFilter");
+            if(request.getRequestURI().equals("/")){
+               response.sendRedirect("swagger-ui/index.html#");
+                return;
+            }
             filterChain.doFilter(request, response);
             System.out.println("Response intercepted by CustomFilter");
         }catch(CustomException.NewException e){

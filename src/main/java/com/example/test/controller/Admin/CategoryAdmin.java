@@ -77,7 +77,7 @@ public class CategoryAdmin {
     public ResponseEntity<ResultDto<ResultPagedDto<List<ResponseCategoryDto>>>> getList(
             @RequestHeader UUID userId,
             @RequestParam(required = false) String categoryName,
-            @RequestParam(required = false ,defaultValue = "20") int pageSize,
+            @RequestParam(required = false ,defaultValue = "20") int pageSize ,
             @RequestParam(required = false , defaultValue = "1") int page
             ) {
         userUtil.isAdmin(userId);

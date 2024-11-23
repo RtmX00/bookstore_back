@@ -15,7 +15,6 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, UUID>, CrudRepository<Category,UUID>{
-    List<Category> findByNameContaining(String name);
     @Query("SELECT u FROM Category u WHERE :name IS NULL OR u.name LIKE %:name%")
     List<Category> findByNameContainingOrAll(@Param("name") String name, Pageable pageable);
 
